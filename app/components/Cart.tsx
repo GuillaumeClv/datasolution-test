@@ -15,9 +15,7 @@ export function Cart () {
 
 			<h1 className="p-3 text-black rounded-lg">Panier :</h1>
 
-			{
-				value?.cart?.length === 0 && <p className="p-3 text-black">Votre panier est vide</p>
-			}
+			{ value?.cart?.length === 0 && <p className="p-3 text-black">Votre panier est vide</p> }
 			
 			{
 				value?.cart?.map(({id, title, price, image, category, quantity}: ProductDetails) => {

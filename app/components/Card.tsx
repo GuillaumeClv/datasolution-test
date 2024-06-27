@@ -5,40 +5,20 @@ import Link from 'next/link'
 import { ProductDetails } from '../_types/types'
 import { CartContext } from "../_contexte/ThemeProvider";
 import { useContext } from "react";
+import { removeProduct, updateProductQuantity } from '../_helpers/helpers';
 
 export function Card ({id, title, price, image, category, quantity}: ProductDetails) {
     const { updateState } = useContext(CartContext);
 
     const handleRemove = () => {
-        updateState((prevState: any) => {
-            const updatedCart = prevState.cart.filter((product: any) => product.id !== id)
-            return { cart: updatedCart }
-        })
+        updateState((prevState: any) => removeProduct(prevState, id))
     }
 
-    const updateQuantity = (productId: number, newQuantity: number) => {
-        if (newQuantity === 0) {
-            updateState((prevState: any) => {
-                const updatedCart = prevState.cart.filter((product: any) => product.id !== id)
-                return { cart: updatedCart }
-            })
+    const updateQuantity = (newQuantity: number) => {
+        if (newQuantity <= 0) {
+            updateState((prevState: any) => removeProduct(prevState, id))
         }
-
-        updateState((prevState: any) => {
-            const updatedCart = [...prevState.cart]
-        
-            const productIndex = updatedCart.findIndex((product: any) => product.id === productId)
-        
-            if (productIndex !== -1) {
-                updatedCart[productIndex] = {
-                    ...updatedCart[productIndex],
-                    quantity: newQuantity
-                }
-            }
-        
-            return { cart: updatedCart }
-        })
-
+        updateState((prevState: any) => updateProductQuantity(prevState, id, newQuantity))
     }
 
     return (
@@ -65,10 +45,10 @@ export function Card ({id, title, price, image, category, quantity}: ProductDeta
 
                 {quantity && (
                    <div className="">
-                        <button className="px-4 py-1 text-sm text-red-600 font-semibold rounded-full border border-red-200 hover:text-white hover:bg-red-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2" type="button" onClick={() => updateQuantity(id, quantity as number + 1)}>
+                        <button className="px-4 py-1 text-sm text-red-600 font-semibold rounded-full border border-red-200 hover:text-white hover:bg-red-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2" type="button" onClick={() => updateQuantity(quantity as number + 1)}>
                             +
                         </button>
-                        <button className="px-4 py-1 text-sm text-red-600 font-semibold rounded-full border border-red-200 hover:text-white hover:bg-red-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2" type="button" onClick={() => updateQuantity(id, quantity as number - 1)}>
+                        <button className="px-4 py-1 text-sm text-red-600 font-semibold rounded-full border border-red-200 hover:text-white hover:bg-red-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2" type="button" onClick={() => updateQuantity(quantity as number - 1)}>
                             -
                         </button>
                     </div>

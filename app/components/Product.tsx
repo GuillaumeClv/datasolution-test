@@ -3,39 +3,24 @@
 import Image from "next/image";
 import { ProductDetails } from "../_types/types";
 import { CartContext } from "../_contexte/ThemeProvider";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Nav } from "./Nav";
+import { addProduct } from "../_helpers/helpers";
+import { useRouter } from "next/navigation";
 
-export function Product ({id, title, price, image, category, quantity}: ProductDetails) {
-    const { value, updateState } = useContext(CartContext);
+export function Product ({id, title, price, image, category}: ProductDetails) {
+    const { updateState } = useContext(CartContext);
+    const router = useRouter()
     
     const handleClick = () => {
-        updateState((prevState: any) => {
-            const productIndex = prevState.cart.findIndex((product: any) => product.id === id)
-          
-            if (productIndex !== -1) {
-                const updatedCart = [...prevState.cart]
-                updatedCart[productIndex] = {
-                ...updatedCart[productIndex],
-                quantity: updatedCart[productIndex].quantity + 1
-                }
-          
-                return { cart: updatedCart }
-            }
-
-            return {
-                cart: [...prevState.cart, { id: id, quantity: 1, title: title, price: price, image: image, category: category }]
-            }
-        })
+        updateState((prevState: any) => addProduct(prevState, id, title, price, image, category))
+        router.push('/cart')
     }
 
-    useEffect(() => {
-      console.log(value)
-    })
-    
     return (
         <>
             <Nav />
+
             <section key={id} className="flex font-sans" >
                 <aside className="flex-none w-48 relative h-52 mr-8">
                     <Image 
@@ -60,7 +45,7 @@ export function Product ({id, title, price, image, category, quantity}: ProductD
                     <div className="flex space-x-4 mb-6 text-sm font-medium mt-auto">
                         <div className="flex-auto flex space-x-4">
                             <button className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2" type="submit" onClick={handleClick}>
-                            Ajouter au panier
+                                Ajouter au panier
                             </button>
                         </div>
                     </div>
